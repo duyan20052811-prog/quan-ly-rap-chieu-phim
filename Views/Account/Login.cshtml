@@ -1,0 +1,23 @@
+@model LoginVm
+@{ ViewData["Title"] = "Đăng nhập"; Layout = "_Bare"; }
+<div class="login">
+    <section class="login-art">
+        <a class="brand p-0" href="#"><span class="brand-mark">R</span><span class="brand-name">Rạp Phim</span></a>
+        <div>
+            <h1>Suất chiếu tiếp theo bắt đầu từ đây.</h1>
+            <p class="mt-3">Bán vé, quản lý lịch chiếu và theo dõi doanh thu trong một hệ thống.</p>
+        </div>
+    </section>
+    <section class="login-form">
+        <form method="post">
+            <h3 class="mb-1">Đăng nhập</h3>
+            <p class="page-sub mb-4">Dùng tài khoản nhân viên hoặc quản trị viên.</p>
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+            <div class="mb-3"><label asp-for="Username" class="form-label"></label><input asp-for="Username" class="form-control" autofocus autocomplete="username" /><span asp-validation-for="Username" class="text-danger small"></span></div>
+            <div class="mb-4"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" autocomplete="current-password" /><span asp-validation-for="Password" class="text-danger small"></span></div>
+            <button class="btn btn-primary w-100 py-2">Đăng nhập</button>
+            <p class="text-muted small mt-4 mb-0">Tài khoản mẫu: admin / admin123, staff / staff123</p>
+        </form>
+    </section>
+</div>

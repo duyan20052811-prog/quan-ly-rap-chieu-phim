@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Tổng quan";
+    var today = (List<ShowtimeRow>)ViewBag.Today;
+    var hour = DateTime.Now.Hour;
+    var greet = hour < 11 ? "Chào buổi sáng" : hour < 14 ? "Chào buổi trưa" : hour < 18 ? "Chào buổi chiều" : "Chào buổi tối";
+}
+<div class="page-head">
+    <div>
+        <h3>@greet, @User.Identity.Name</h3>
+        <p class="page-sub">Hôm nay, @DateTime.Today.ToString("dd/MM/yyyy")</p>
+    </div>
+    <a asp-controller="Sales" asp-action="Index" class="btn btn-primary">Bán vé</a>
+</div>
+
+<div class="figures mb-4">
+    <div class="figure"><div class="n">@ViewBag.Movies</div><div class="l">Phim đang chiếu</div></div>
+    <div class="figure"><div class="n">@ViewBag.ShowtimesToday</div><div class="l">Suất chiếu hôm nay</div></div>
+    <div class="figure"><div class="n">@ViewBag.TicketsToday</div><div class="l">Vé đã bán hôm nay</div></div>
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="figure hl"><div class="n">@(((decimal)ViewBag.RevenueToday).ToString("N0")) đ</div><div class="l">Doanh thu hôm nay</div></div>
+    }
+</div>
+
+<h5 class="mb-3">Suất chiếu hôm nay</h5>
+@foreach (var r in today)
+{
+    var pct = r.Capacity == 0 ? 0 : r.Sold * 100 / r.Capacity;
+    var past = r.Showtime.EndTime < DateTime.Now;
+    <div class="run @(past ? "past" : "")">
+        <div class="time">@r.Showtime.StartTime.ToString("HH:mm")<small>đến @r.Showtime.EndTime.ToString("HH:mm")</small></div>
+        <div>
+            <div><b>@r.Showtime.Movie.Title</b></div>
+            <div class="meta">@r.Showtime.Room.RoomName • đã bán @r.Sold/@r.Capacity ghế</div>
+            <div class="occ"><i style="width:@pct%"></i></div>
+        </div>
+        @if (!past) { <a asp-controller="Sales" asp-action="Seats" asp-route-id="@r.Showtime.ShowtimeId" class="btn btn-sm btn-outline-primary">Chọn ghế</a> }
+        else { <span class="pill off">Đã chiếu</span> }
+    </div>
+}
+@if (!today.Any())
+{
+    <div class="card"><div class="card-body text-muted">Hôm nay chưa có suất chiếu. @if (User.IsInRole("Admin")) { <a asp-controller="Showtimes" asp-action="Create">Thêm suất chiếu</a> }</div></div>
+}
