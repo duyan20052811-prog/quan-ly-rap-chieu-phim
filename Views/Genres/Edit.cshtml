@@ -1,0 +1,19 @@
+@model CinemaManagement.Controllers.GenreFormVm
+@{
+    ViewData["Title"] = "Sửa thể loại";
+    ViewData["FormAction"] = "Edit";
+    ViewData["SubmitText"] = "Lưu thay đổi";
+}
+
+<div class="page-head">
+    <div>
+        <h3>Sửa thể loại</h3>
+        <p class="page-sub">Cập nhật thông tin thể loại phim</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <partial name="_GenreForm" model="Model" />
+    </div>
+</div>
