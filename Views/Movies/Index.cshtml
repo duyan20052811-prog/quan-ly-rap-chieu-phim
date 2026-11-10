@@ -1,0 +1,33 @@
+@model List<Movie>
+@{ ViewData["Title"] = "Phim"; }
+<div class="page-head">
+    <div><h3>Phim</h3><p class="page-sub">@Model.Count phim trong danh sách</p></div>
+    @if (User.IsInRole("Admin")) { <a asp-action="Create" class="btn btn-primary">Thêm phim</a> }
+</div>
+<form class="d-flex gap-2 mb-4" style="max-width:420px">
+    <input name="q" value="@ViewBag.Q" class="form-control" placeholder="Tìm theo tên phim" />
+    <button class="btn btn-outline-primary">Tìm</button>
+</form>
+<div class="posters">
+@foreach (var m in Model)
+{
+    var hue = (m.MovieId * 53) % 360;
+    var statusText = m.Status == "NowShowing" ? "Đang chiếu" : m.Status == "ComingSoon" ? "Sắp chiếu" : "Ngừng chiếu";
+    var statusCls = m.Status == "NowShowing" ? "ok" : m.Status == "ComingSoon" ? "warn" : "off";
+    <article class="poster-card">
+        <div class="poster" style="background:linear-gradient(150deg,hsl(@hue 50% 34%),hsl(@((hue + 40) % 360) 55% 16%))">
+            <span class="initial">@(m.Title.Length > 0 ? m.Title.Substring(0, 1) : "")</span>
+            <span class="t">@m.Title</span>
+        </div>
+        <div class="poster-body">
+            <div class="g">@(m.MovieGenres.Any() ? string.Join(", ", m.MovieGenres.Select(g => g.Genre.GenreName)) : "Chưa có thể loại")</div>
+            <div class="g">@m.Duration phút • @m.ReleaseDate.ToString("dd/MM/yyyy")</div>
+            <div class="row-b">
+                <span class="pill @statusCls">@statusText</span>
+                @if (User.IsInRole("Admin")) { <a asp-action="Edit" asp-route-id="@m.MovieId" class="btn btn-sm btn-outline-primary">Sửa</a> }
+            </div>
+        </div>
+    </article>
+}
+</div>
+@if (!Model.Any()) { <div class="card"><div class="card-body text-muted">Không tìm thấy phim nào.</div></div> }

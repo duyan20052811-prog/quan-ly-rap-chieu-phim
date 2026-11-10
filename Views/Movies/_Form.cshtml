@@ -1,0 +1,23 @@
+@model MovieFormVm
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row g-3">
+        <div class="col-md-8"><label asp-for="Title" class="form-label"></label><input asp-for="Title" class="form-control" /><span asp-validation-for="Title" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="Duration" class="form-label"></label><input asp-for="Duration" class="form-control" /><span asp-validation-for="Duration" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="ReleaseDate" class="form-label"></label><input asp-for="ReleaseDate" type="date" class="form-control" value="@Model.ReleaseDate.ToString("yyyy-MM-dd")" /></div>
+        <div class="col-md-4"><label asp-for="Status" class="form-label"></label>
+            <select asp-for="Status" class="form-select">
+                <option value="NowShowing">Đang chiếu</option><option value="ComingSoon">Sắp chiếu</option><option value="Stopped">Ngừng chiếu</option>
+            </select></div>
+        <div class="col-12"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" rows="3" class="form-control"></textarea></div>
+        <div class="col-12"><label class="form-label">Thể loại</label><div>
+            @foreach (var g in Model.AllGenres)
+            {
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="GenreIds" value="@g.GenreId" id="g@(g.GenreId)" @(Model.GenreIds.Contains(g.GenreId) ? "checked" : "") />
+                    <label class="form-check-label" for="g@(g.GenreId)">@g.GenreName</label>
+                </div>
+            }</div></div>
+    </div>
+    <div class="mt-4"><button class="btn btn-primary">Lưu</button> <a asp-action="Index" class="btn btn-secondary">Quay lại</a></div>
+</form>

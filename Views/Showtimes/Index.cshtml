@@ -1,0 +1,22 @@
+@model List<Showtime>
+@{ ViewData["Title"] = "Lịch chiếu"; var date = (DateTime)ViewBag.Date; }
+<div class="d-flex justify-content-between mb-3">
+    <h3>Lịch chiếu ngày @date.ToString("dd/MM/yyyy")</h3>
+    @if (User.IsInRole("Admin")) { <a asp-action="Create" class="btn btn-primary">+ Thêm suất chiếu</a> }
+</div>
+<form class="row g-2 mb-3"><div class="col-auto"><input type="date" name="date" value="@date.ToString("yyyy-MM-dd")" class="form-control" /></div><div class="col-auto"><button class="btn btn-outline-secondary">Xem</button></div></form>
+<table class="table table-striped bg-white">
+    <thead><tr><th>Giờ chiếu</th><th>Phim</th><th>Phòng</th><th>Giá vé</th><th>Trạng thái</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var s in Model)
+    {
+        <tr><td>@s.StartTime.ToString("HH:mm") - @s.EndTime.ToString("HH:mm")</td><td>@s.Movie.Title</td><td>@s.Room.RoomName</td>
+            <td>@s.Price.ToString("N0") đ</td><td><span class="pill @(s.Status == "Active" ? "ok" : "off")">@(s.Status == "Active" ? "Hoạt động" : "Đã hủy")</span></td>
+            <td class="d-flex gap-1">
+                @if (s.Status == "Active") { <a asp-controller="Sales" asp-action="Seats" asp-route-id="@s.ShowtimeId" class="btn btn-sm btn-outline-primary">Xem ghế</a> }
+                @if (User.IsInRole("Admin") && s.Status == "Active") { <form asp-action="Cancel" asp-route-id="@s.ShowtimeId" method="post" onsubmit="return confirm('Hủy suất chiếu?')"><button class="btn btn-sm btn-outline-danger">Hủy</button></form> }
+            </td></tr>
+    }
+    @if (!Model.Any()) { <tr><td colspan="6" class="text-center text-muted">Không có suất chiếu.</td></tr> }
+    </tbody>
+</table>

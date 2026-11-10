@@ -1,0 +1,12 @@
+@model RoomCreateVm
+@{ ViewData["Title"] = "Thêm phòng"; }
+<h3>Thêm phòng chiếu</h3>
+<p class="text-muted">Hệ thống tự sinh ghế theo hàng (A, B, C...) và số ghế mỗi hàng.</p>
+<form method="post" style="max-width:500px">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3"><label asp-for="RoomName" class="form-label"></label><input asp-for="RoomName" class="form-control" /><span asp-validation-for="RoomName" class="text-danger"></span></div>
+    <div class="mb-3"><label asp-for="Rows" class="form-label"></label><input asp-for="Rows" class="form-control" /><span asp-validation-for="Rows" class="text-danger"></span></div>
+    <div class="mb-3"><label asp-for="SeatsPerRow" class="form-label"></label><input asp-for="SeatsPerRow" class="form-control" /><span asp-validation-for="SeatsPerRow" class="text-danger"></span></div>
+    <div class="mb-3"><label asp-for="VipRows" class="form-label"></label><input asp-for="VipRows" class="form-control" /><span asp-validation-for="VipRows" class="text-danger"></span></div>
+    <button class="btn btn-primary">Tạo phòng</button> <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>

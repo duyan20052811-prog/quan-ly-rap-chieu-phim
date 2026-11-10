@@ -1,0 +1,12 @@
+@model ShowtimeCreateVm
+@{ ViewData["Title"] = "Thêm suất chiếu"; }
+<h3>Thêm suất chiếu</h3>
+<p class="text-muted">Giờ kết thúc = giờ bắt đầu + thời lượng phim + 15 phút dọn phòng. Hệ thống tự kiểm tra trùng lịch trong phòng.</p>
+<form method="post" style="max-width:500px">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3"><label asp-for="MovieId" class="form-label"></label><select asp-for="MovieId" asp-items="(SelectList)ViewBag.Movies" class="form-select"></select></div>
+    <div class="mb-3"><label asp-for="RoomId" class="form-label"></label><select asp-for="RoomId" asp-items="(SelectList)ViewBag.Rooms" class="form-select"></select></div>
+    <div class="mb-3"><label asp-for="StartTime" class="form-label"></label><input asp-for="StartTime" type="datetime-local" class="form-control" value="@Model.StartTime.ToString("yyyy-MM-ddTHH:mm")" /></div>
+    <div class="mb-3"><label asp-for="Price" class="form-label"></label><input asp-for="Price" class="form-control" /></div>
+    <button class="btn btn-primary">Lưu</button> <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>

@@ -1,0 +1,14 @@
+@model List<Room>
+@{ ViewData["Title"] = "Phòng chiếu"; }
+<div class="d-flex justify-content-between mb-3"><h3>Phòng chiếu</h3><a asp-action="Create" class="btn btn-primary">+ Thêm phòng</a></div>
+<table class="table table-striped bg-white">
+    <thead><tr><th>Phòng</th><th>Sức chứa</th><th>Ghế VIP</th><th>Trạng thái</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var r in Model)
+    {
+        <tr><td>@r.RoomName</td><td>@r.Capacity</td><td>@r.Seats.Count(s => s.SeatType == "VIP")</td>
+            <td><span class="pill @(r.Status == "Active" ? "ok" : "warn")">@(r.Status == "Active" ? "Hoạt động" : "Bảo trì")</span></td>
+            <td><form asp-action="ToggleStatus" asp-route-id="@r.RoomId" method="post"><button class="btn btn-sm btn-outline-secondary">Đổi trạng thái</button></form></td></tr>
+    }
+    </tbody>
+</table>
