@@ -1,0 +1,100 @@
+@using CinemaManagement.Controllers
+@model SaleSeatsVm
+@{
+    ViewData["Title"] = "Chọn ghế và thanh toán";
+    var seatMap = Model.SeatMap;
+    var checkout = Model.Checkout;
+    var selectedSeats = checkout.SeatIds.ToHashSet();
+}
+
+<div class="page-head">
+    <div>
+        <h3>Chọn ghế và thanh toán</h3>
+        <p class="page-sub">@seatMap.Showtime.Movie.Title · @seatMap.Showtime.Room.RoomName · @seatMap.Showtime.StartTime.ToString("HH:mm")</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Chọn suất khác</a>
+</div>
+
+<form asp-action="Checkout" method="post">
+    <input asp-for="Checkout.ShowtimeId" type="hidden" />
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    <div class="card mb-3">
+        <div class="card-header">Sơ đồ ghế</div>
+        <div class="card-body">
+            <div class="text-center rounded bg-light border p-2 mb-4">MÀN HÌNH</div>
+            <div class="d-flex flex-column align-items-center gap-2">
+                @foreach (var row in seatMap.Seats.GroupBy(seat => seat.SeatRow).OrderBy(group => group.Key))
+                {
+                    <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
+                        <span class="text-muted fw-semibold me-2">@row.Key</span>
+                        @foreach (var seat in row.OrderBy(seat => seat.SeatNumber))
+                        {
+                            var sold = seatMap.TakenSeatIds.Contains(seat.SeatId);
+                            var unavailable = seat.Status != "Active";
+                            <label class="text-center">
+                                @if (sold || unavailable)
+                                {
+                                    <input type="checkbox" class="btn-check" disabled />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" class="btn-check" name="Checkout.SeatIds" value="@seat.SeatId" checked="@selectedSeats.Contains(seat.SeatId)" />
+                                }
+                                <span class="btn btn-sm @(sold || unavailable ? "btn-secondary" : seat.SeatType == "VIP" ? "btn-outline-warning" : "btn-outline-primary")">
+                                    @seat.SeatNumber
+                                </span>
+                            </label>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="small text-muted text-center mt-3">Ghế xám: đã bán/không sử dụng · Ghế vàng: VIP (+20%)</div>
+        </div>
+    </div>
+
+    @if (seatMap.Foods.Count > 0)
+    {
+        <div class="card mb-3">
+            <div class="card-header">Đồ ăn, thức uống</div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr><th>Sản phẩm</th><th>Đơn giá</th><th style="width: 150px">Số lượng</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var food in seatMap.Foods)
+                        {
+                            var quantity = checkout.FoodQuantities.GetValueOrDefault(food.FoodId);
+                            <tr>
+                                <td>@food.FoodName</td>
+                                <td>@food.Price.ToString("N0") đ</td>
+                                <td>
+                                    <input class="form-control" type="number" min="0" max="99"
+                                           name="Checkout.FoodQuantities[@food.FoodId]" value="@quantity" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <div class="card mb-3">
+        <div class="card-header">Thanh toán</div>
+        <div class="card-body">
+            <label for="paymentMethod" class="form-label">Phương thức thanh toán</label>
+            <select id="paymentMethod" name="Checkout.PaymentMethod" class="form-select" style="max-width: 320px">
+                <option value="Cash" selected="@(checkout.PaymentMethod == "Cash")">Tiền mặt</option>
+                <option value="Card" selected="@(checkout.PaymentMethod == "Card")">Thẻ</option>
+                <option value="Transfer" selected="@(checkout.PaymentMethod == "Transfer")">Chuyển khoản</option>
+            </select>
+            <p class="text-muted small mt-2 mb-0">Ghế được xác nhận lại khi thanh toán để tránh bán trùng.</p>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Thanh toán</button>
+        <a class="btn btn-outline-primary" asp-action="Index">Hủy</a>
+    </div>
+</form>

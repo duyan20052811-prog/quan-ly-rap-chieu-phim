@@ -1,0 +1,14 @@
+@using CinemaManagement.Controllers
+@model FoodFormVm
+@{
+    ViewData["Title"] = "Thêm sản phẩm";
+}
+
+<div class="page-head">
+    <div>
+        <h3>Thêm sản phẩm</h3>
+        <p class="page-sub">Nhập tên và giá bán của sản phẩm.</p>
+    </div>
+</div>
+
+<partial name="_FoodForm" model="Model" />

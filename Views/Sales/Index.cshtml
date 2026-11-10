@@ -1,0 +1,47 @@
+@model List<Showtime>
+@{
+    ViewData["Title"] = "Bán vé";
+}
+
+<div class="page-head">
+    <div>
+        <h3>Bán vé</h3>
+        <p class="page-sub">Chọn suất chiếu trong ngày để chọn ghế và đồ ăn kèm.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Check">Kiểm tra vé</a>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-warning">Hôm nay không còn suất chiếu nào có thể bán vé.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table bg-white">
+            <thead>
+                <tr>
+                    <th>Phim</th>
+                    <th>Phòng</th>
+                    <th>Bắt đầu</th>
+                    <th>Giá vé</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var showtime in Model)
+                {
+                    <tr>
+                        <td>@showtime.Movie.Title</td>
+                        <td>@showtime.Room.RoomName</td>
+                        <td>@showtime.StartTime.ToString("HH:mm")</td>
+                        <td>@showtime.Price.ToString("N0") đ</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-primary" asp-action="Seats" asp-route-id="@showtime.ShowtimeId">Chọn ghế</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

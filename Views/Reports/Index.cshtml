@@ -1,0 +1,109 @@
+@using CinemaManagement.Controllers
+@model ReportsPageVm
+@{
+    ViewData["Title"] = "Báo cáo doanh thu";
+    var summary = Model.Summary;
+    var groupedByMonth = Model.GroupBy == "month";
+}
+
+<div class="page-head">
+    <div>
+        <h3>Báo cáo doanh thu</h3>
+        <p class="page-sub">Chỉ tính vé và đơn đồ ăn thuộc booking đã thanh toán.</p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3 align-items-end">
+            <div class="col-sm-6 col-lg-3">
+                <label for="from" class="form-label">Từ ngày</label>
+                <input id="from" name="from" type="date" value="@summary.From.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <label for="to" class="form-label">Đến ngày</label>
+                <input id="to" name="to" type="date" value="@summary.To.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <label for="groupBy" class="form-label">Nhóm theo</label>
+                <select id="groupBy" name="groupBy" class="form-select">
+                    <option value="day" selected="@(Model.GroupBy == "day")">Ngày</option>
+                    <option value="month" selected="@(Model.GroupBy == "month")">Tháng</option>
+                </select>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <button class="btn btn-primary w-100" type="submit">Xem báo cáo</button>
+            </div>
+        </form>
+        <div asp-validation-summary="All" class="text-danger mt-3"></div>
+    </div>
+</div>
+
+@if (ViewData.ModelState.IsValid)
+{
+    <div class="figures mb-4">
+        <div class="figure"><div class="n">@summary.TicketCount</div><div class="l">Vé đã bán</div></div>
+        <div class="figure hl"><div class="n">@summary.TicketRevenue.ToString("N0") đ</div><div class="l">Doanh thu vé</div></div>
+        <div class="figure"><div class="n">@summary.FoodRevenue.ToString("N0") đ</div><div class="l">Doanh thu đồ ăn</div></div>
+        <div class="figure hl"><div class="n">@summary.Total.ToString("N0") đ</div><div class="l">Tổng doanh thu</div></div>
+    </div>
+
+    <h5 class="mb-3">Doanh thu theo @(groupedByMonth ? "tháng" : "ngày")</h5>
+    <div class="table-responsive mb-4">
+        <table class="table bg-white">
+            <thead>
+                <tr>
+                    <th>@(groupedByMonth ? "Tháng" : "Ngày")</th>
+                    <th class="text-end">Số vé</th>
+                    <th class="text-end">Tiền vé</th>
+                    <th class="text-end">Tiền đồ ăn</th>
+                    <th class="text-end">Tổng</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var index = 0; index < summary.Labels.Count; index++)
+                {
+                    var ticketRevenue = summary.TicketSeries[index];
+                    var foodRevenue = summary.FoodSeries[index];
+                    <tr>
+                        <td>@summary.Labels[index]</td>
+                        <td class="text-end">@Model.TicketCountSeries[index]</td>
+                        <td class="text-end">@ticketRevenue.ToString("N0") đ</td>
+                        <td class="text-end">@foodRevenue.ToString("N0") đ</td>
+                        <td class="text-end fw-semibold">@((ticketRevenue + foodRevenue).ToString("N0")) đ</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <h5 class="mb-3">Doanh thu vé theo phim</h5>
+    @if (summary.TopMovies.Count == 0)
+    {
+        <div class="alert alert-warning">Không có vé đã thanh toán trong khoảng thời gian này.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table bg-white">
+                <thead>
+                    <tr>
+                        <th>Phim</th>
+                        <th class="text-end">Số vé</th>
+                        <th class="text-end">Doanh thu vé</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var movie in summary.TopMovies)
+                    {
+                        <tr>
+                            <td>@movie.Title</td>
+                            <td class="text-end">@movie.Tickets</td>
+                            <td class="text-end">@movie.Revenue.ToString("N0") đ</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}

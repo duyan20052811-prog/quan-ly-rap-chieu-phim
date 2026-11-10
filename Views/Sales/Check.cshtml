@@ -1,0 +1,53 @@
+@using CinemaManagement.Controllers
+@model BookingCheckVm
+@{
+    ViewData["Title"] = "Kiểm tra vé";
+}
+
+<div class="page-head">
+    <div>
+        <h3>Kiểm tra vé</h3>
+        <p class="page-sub">Tra cứu vé bằng mã booking trên hóa đơn.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Bán vé</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form asp-action="Check" method="get" class="row g-2">
+            <div class="col-sm">
+                <label for="code" class="visually-hidden">Mã booking</label>
+                <input id="code" name="code" value="@Model.Code" class="form-control" placeholder="Ví dụ: BK000123" />
+            </div>
+            <div class="col-sm-auto">
+                <button class="btn btn-primary" type="submit">Kiểm tra</button>
+            </div>
+        </form>
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(value => value.Errors))
+        {
+            <div class="text-danger mt-2">@error.ErrorMessage</div>
+        }
+    </div>
+</div>
+
+@if (Model.Booking != null)
+{
+    var showtime = Model.Booking.Tickets.FirstOrDefault()?.Showtime;
+    <div class="card">
+        <div class="card-header">Booking @($"BK{Model.Booking.BookingId:D6}")</div>
+        <div class="card-body">
+            @if (showtime != null)
+            {
+                <p><strong>Phim:</strong> @showtime.Movie.Title</p>
+                <p><strong>Suất chiếu:</strong> @showtime.StartTime.ToString("dd/MM/yyyy HH:mm") · @showtime.Room.RoomName</p>
+            }
+            <p>
+                <strong>Ghế:</strong>
+                @string.Join(", ", Model.Booking.Tickets.OrderBy(ticket => ticket.Seat.SeatRow)
+                    .ThenBy(ticket => ticket.Seat.SeatNumber).Select(ticket => ticket.Seat.Label))
+            </p>
+            <p><strong>Trạng thái booking:</strong> @Model.Booking.BookingStatus</p>
+            <p class="mb-0"><strong>Tổng tiền:</strong> @Model.Booking.TotalAmount.ToString("N0") đ</p>
+        </div>
+    </div>
+}

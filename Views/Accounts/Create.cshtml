@@ -1,0 +1,39 @@
+@using CinemaManagement.Controllers
+@model AccountCreateFormVm
+@{
+    ViewData["Title"] = "Thêm tài khoản";
+}
+
+<div class="page-head">
+    <div>
+        <h3>Thêm tài khoản nhân viên</h3>
+        <p class="page-sub">Tài khoản mới được tạo với quyền nhân viên và trạng thái hoạt động.</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="mb-3">
+                <label asp-for="Username" class="form-label"></label>
+                <input asp-for="Username" class="form-control" autocomplete="username" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary" type="submit">Tạo tài khoản</button>
+                <a class="btn btn-outline-primary" asp-action="Index">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>

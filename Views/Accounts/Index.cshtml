@@ -1,0 +1,57 @@
+@model List<Account>
+@{
+    ViewData["Title"] = "Tài khoản nhân viên";
+    var currentAccountId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+}
+
+<div class="page-head">
+    <div>
+        <h3>Tài khoản nhân viên</h3>
+        <p class="page-sub">Tạo tài khoản, đặt lại mật khẩu và quản lý trạng thái truy cập.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">Thêm tài khoản</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table bg-white">
+        <thead>
+            <tr>
+                <th>Tên đăng nhập</th>
+                <th>Vai trò</th>
+                <th>Trạng thái</th>
+                <th class="text-end">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var account in Model)
+            {
+                var isActive = account.Status == "Active";
+                var isSelf = currentAccountId == account.AccountId.ToString();
+                <tr>
+                    <td>
+                        @account.Username
+                        @if (isSelf)
+                        {
+                            <span class="text-muted small">(Bạn)</span>
+                        }
+                    </td>
+                    <td>@(account.Role == "Admin" ? "Quản trị viên" : "Nhân viên")</td>
+                    <td>
+                        <span class="pill @(isActive ? "ok" : "off")">@(isActive ? "Đang hoạt động" : "Ngừng hoạt động")</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="d-inline-flex flex-wrap justify-content-end gap-2">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="ResetPassword" asp-route-id="@account.AccountId">Đặt lại mật khẩu</a>
+                            <form asp-action="ToggleStatus" asp-route-id="@account.AccountId" method="post">
+                                <button class="btn btn-sm @(isActive ? "btn-outline-danger" : "btn-outline-success")"
+                                        type="submit" disabled="@(isActive && isSelf)">
+                                    @(isActive ? "Khóa tài khoản" : "Mở tài khoản")
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

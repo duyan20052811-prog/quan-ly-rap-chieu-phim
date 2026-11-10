@@ -1,0 +1,46 @@
+@model Booking
+@{
+    ViewData["Title"] = "Thanh toán thành công";
+    var code = $"BK{Model.BookingId:D6}";
+    var showtime = Model.Tickets.FirstOrDefault()?.Showtime;
+}
+
+<div class="page-head">
+    <div>
+        <h3>Thanh toán thành công</h3>
+        <p class="page-sub">Mã booking: <strong>@code</strong></p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Bán vé tiếp</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">Thông tin vé</div>
+    <div class="card-body">
+        @if (showtime != null)
+        {
+            <p><strong>Phim:</strong> @showtime.Movie.Title</p>
+            <p><strong>Suất chiếu:</strong> @showtime.StartTime.ToString("dd/MM/yyyy HH:mm") · @showtime.Room.RoomName</p>
+        }
+        <p><strong>Ghế:</strong> @string.Join(", ", Model.Tickets.OrderBy(ticket => ticket.Seat.SeatRow).ThenBy(ticket => ticket.Seat.SeatNumber).Select(ticket => ticket.Seat.Label))</p>
+        <p><strong>Tổng thanh toán:</strong> @Model.TotalAmount.ToString("N0") đ</p>
+        <p class="mb-0"><strong>Mã kiểm tra vé:</strong> @code</p>
+    </div>
+</div>
+
+@if (Model.FoodOrders.SelectMany(order => order.Details).Any())
+{
+    <div class="card mb-3">
+        <div class="card-header">Đồ ăn đã đặt</div>
+        <ul class="list-group list-group-flush">
+            @foreach (var detail in Model.FoodOrders.SelectMany(order => order.Details))
+            {
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>@detail.FoodItem.FoodName × @detail.Quantity</span>
+                    <span>@((detail.UnitPrice * detail.Quantity).ToString("N0")) đ</span>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+<a class="btn btn-primary" asp-action="Check" asp-route-code="@code">Kiểm tra vé</a>
